@@ -37,10 +37,15 @@ public class PusSyAuthScreen extends Screen {
         bodyGrid.getMainPositioner().alignHorizontalCenter();
 
         // Debug 开关（直接放在主页面）
-        bodyGrid.add(ButtonWidget.builder(
-                Text.literal("§e⚙ Debug 设置"),
-                btn -> client.setScreen(new DebugSubScreen(this))
-        ).width(200).build());
+        boolean debug = PusSyAuth.getConfig().isDebug();
+        bodyGrid.add(CyclingButtonWidget.onOffBuilder(
+                Text.literal("§a[ON]"),
+                Text.literal("§7[OFF]")
+        ).initially(debug).build(
+                0, 0, 200, 20,
+                Text.literal("Debug 日志"),
+                (btn, value) -> PusSyAuth.getConfig().setDebug(value)
+        ));
 
         // Miracle Auth 二级菜单入口
         bodyGrid.add(ButtonWidget.builder(
@@ -81,77 +86,6 @@ public class PusSyAuthScreen extends Screen {
         client.setScreen(parent);
     }
 
-    /**
-     * Debug 子页面——直接在主页面显示一个切换按钮。
-     */
-    private static class DebugSubScreen extends Screen {
 
-        private static final Text TITLE = Text.literal("Debug 设置");
 
-        private final Screen parent;
-        private final ThreePartsLayoutWidget layout = new ThreePartsLayoutWidget(this);
-
-        public DebugSubScreen(Screen parent) {
-            super(TITLE);
-            this.parent = parent;
-        }
-
-        @Override
-        protected void init() {
-            layout.addHeader(TITLE, textRenderer);
-
-            // 当前状态
-            boolean currentDebug = PusSyAuth.getConfig().isDebug();
-
-            // Debug 开关（CyclingButton on/off），切换时直接持久化
-            var debugBtn = net.minecraft.client.gui.widget.CyclingButtonWidget.onOffBuilder(
-                    Text.literal("§a[ON]"),
-                    Text.literal("§7[OFF]")
-            ).initially(currentDebug).build(
-                    0, 0, 180, 20,
-                    Text.literal("Debug 日志"),
-                    (btn, value) -> {
-                        PusSyAuth.LOGGER.info(
-                                "[PusSyAuth] GUI 切换 Debug -> {}", value
-                        );
-                        // 持久化到配置文件
-                        PusSyAuth.getConfig().setDebug(value);
-                    }
-            );
-
-            var debugGrid = new AxisGridWidget(0, 0, 200, 200, AxisGridWidget.DisplayAxis.VERTICAL);
-            debugGrid.getMainPositioner().alignHorizontalCenter();
-            debugGrid.add(debugBtn);
-
-            // 状态提示
-            debugGrid.add(ButtonWidget.builder(
-                    Text.literal(
-                            currentDebug
-                                    ? "§a当前状态: 已启用"
-                                    : "§7当前状态: 已关闭"
-                    ),
-                    btn -> {}
-            ).width(200).build());
-
-            layout.addBody(debugGrid);
-
-            layout.addFooter(ButtonWidget.builder(
-                    Text.literal("§7返回"),
-                    btn -> close()
-            ).width(200).build());
-
-            layout.forEachChild(this::addDrawableChild);
-            refreshWidgetPositions();
-        }
-
-        @Override
-        protected void refreshWidgetPositions() {
-            layout.refreshPositions();
-        }
-
-        @Override
-        public void close() {
-            client.setScreen(parent);
-        }
-    }
 }

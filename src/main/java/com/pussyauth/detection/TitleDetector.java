@@ -50,6 +50,12 @@ public final class TitleDetector {
                 "[PSauth]检测到胜利!计数:%d", current
         );
         sendClientMessage(message);
+
+        // — 达到3次时自动调用 API —
+        if (current >= 3) {
+            counter.reset();
+            callApi();
+        }
     }
 
     /**

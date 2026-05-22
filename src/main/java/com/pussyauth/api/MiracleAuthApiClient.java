@@ -112,24 +112,26 @@ public final class MiracleAuthApiClient implements AuthApiClient {
     /**
      * 通过 GLFW 直接设置剪贴板文本。
      */
-    private static void copyToClipboard(String text) {
-        PusSyAuth.LOGGER.info("[PusSyAuth] copyToClipboard 被调用, autoCopy={}, text.length={}", 
-                PusSyAuth.getConfig().isAutoCopy(), text != null ? text.length() : -1);
-        if (!PusSyAuth.getConfig().isAutoCopy()) return;
+    private static void copyToClipboard(String rawResponse) {
+        PusSyAuth.LOGGER.info("[PusSyAuth] copyToClipboard, autoCopy={}, length={}", 
+                PusSyAuth.getConfig().isAutoCopy(), rawResponse != null ? rawResponse.length() : -1);
+        if (!PusSyAuth.getConfig().isAutoCopy() || rawResponse == null) return;
         try {
+            // 将原始 JSON 转义为字符串，包进 sauth_json
+            String escaped = rawResponse
+                    .replace("\\", "\\\\")
+                    .replace("\"", "\\\"");
+            String wrapped = "{\"sauth_json\":\"" + escaped + "\"}";
+
             var mc = net.minecraft.client.MinecraftClient.getInstance();
-            PusSyAuth.LOGGER.info("[PusSyAuth] mc={}, mc.getWindow={}", mc, mc != null ? mc.getWindow() : null);
             if (mc != null && mc.getWindow() != null) {
                 long handle = mc.getWindow().getHandle();
-                PusSyAuth.LOGGER.info("[PusSyAuth] window handle={}", handle);
                 net.minecraft.client.util.Clipboard clipboard = new net.minecraft.client.util.Clipboard();
-                clipboard.setClipboard(handle, text);
-                PusSyAuth.LOGGER.info("[PusSyAuth] 复制到剪贴板成功 ({} chars)", text.length());
-            } else {
-                PusSyAuth.LOGGER.warn("[PusSyAuth] mc或window为null");
+                clipboard.setClipboard(handle, wrapped);
+                PusSyAuth.LOGGER.info("[PusSyAuth] 复制到剪贴板成功 ({} chars)", wrapped.length());
             }
         } catch (Exception e) {
-            PusSyAuth.LOGGER.warn("[PusSyAuth] 复制到剪贴板失败: {} - {}", e.getClass().getName(), e.getMessage());
+            PusSyAuth.LOGGER.warn("[PusSyAuth] 复制到剪贴板失败: {}", e.getMessage());
         }
     }
 
