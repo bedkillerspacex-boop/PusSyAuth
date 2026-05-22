@@ -1,0 +1,32 @@
+{
+    "schemaVersion": 1,
+    "id": "${mod_id}",
+    "version": "${version}",
+    "name": "${mod_name}",
+    "description": "${mod_description}",
+    "authors": [
+        "${mod_author}"
+    ],
+    "contact": {
+        "sources": "https://github.com/pusu/${mod_id}",
+        "issues": "https://github.com/pusu/${mod_id}/issues"
+    },
+    "license": "${mod_license}",
+    "icon": "assets/${mod_id}/icon.png",
+    "environment": "client",
+    "entrypoints": {
+        "client": [
+            "com.pussyauth.PusSyAuth"
+        ]
+    },
+    "mixins": [
+        "pussyauth.mixins.json"
+    ],
+    "depends": {
+        "fabricloader": ">=${loader_version}",
+        "minecraft": "~${minecraft_version}",
+        "java": ">=21",
+        "fabric-api": "*"
+    },
+    "suggests": {}
+}
