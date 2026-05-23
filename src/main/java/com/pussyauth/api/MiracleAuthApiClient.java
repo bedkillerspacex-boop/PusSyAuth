@@ -28,6 +28,7 @@ public final class MiracleAuthApiClient implements AuthApiClient {
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(
                         Math.min(timeoutSeconds, 10)))
+                .proxy(java.net.ProxySelector.getDefault())
                 .build();
     }
 

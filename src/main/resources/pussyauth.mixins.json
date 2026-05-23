@@ -5,8 +5,7 @@
     "compatibilityLevel": "JAVA_21",
     "client": [
         "ServerMetadataMixin",
-        "TitleS2CPacketMixin",
-        "KeyboardMixin"
+        "TitleS2CPacketMixin"
     ],
     "injectors": {
         "defaultRequire": 1

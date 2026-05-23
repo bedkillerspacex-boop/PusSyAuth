@@ -41,6 +41,7 @@ public class PusSyAuth implements ClientModInitializer {
     private static TitleDetector titleDetector;
     private static AuthApiClient authApiClient;
     private static KeyBinding miracleKeyBinding;
+    private static KeyBinding settingsKeyBinding;
     private static boolean authActive = false;
 
     @Override
@@ -53,6 +54,14 @@ public class PusSyAuth implements ClientModInitializer {
         titleDetector = new TitleDetector(victoryCounter);
         authApiClient = createAuthApiClient();
 
+        // Register key binding for settings screen (default Y key)
+        settingsKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "key.pussyauth.settings",
+                InputUtil.Type.KEYSYM,
+                GLFW.GLFW_KEY_Y,
+                "category.pussyauth"
+        ));
+
         // Register key binding (no default key)
         miracleKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.pussyauth.miracle",
@@ -62,6 +71,9 @@ public class PusSyAuth implements ClientModInitializer {
         ));
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            if (settingsKeyBinding.wasPressed()) {
+                openSettingsScreen(client.currentScreen);
+            }
             if (miracleKeyBinding.wasPressed()) {
                 LOGGER.info("[{}] Key pressed: Miracle Auth API call", MOD_ID);
                 if (client.player != null) {

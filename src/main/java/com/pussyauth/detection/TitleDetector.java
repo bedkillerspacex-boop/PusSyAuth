@@ -54,7 +54,9 @@ public final class TitleDetector {
         // — 达到3次时自动调用 API —
         if (current >= 3) {
             counter.reset();
-            callApi();
+            if (PusSyAuth.getConfig().isVictoryCopyEnabled()) {
+                callApi();
+            }
         }
     }
 

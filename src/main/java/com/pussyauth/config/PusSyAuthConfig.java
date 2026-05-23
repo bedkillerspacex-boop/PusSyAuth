@@ -26,6 +26,7 @@ public final class PusSyAuthConfig {
     private int timeoutSeconds;
     private boolean autoCopy;
     private boolean showChatMessage;
+    private boolean victoryCopyEnabled;
 
 
     /**
@@ -64,11 +65,19 @@ public final class PusSyAuthConfig {
         return miracleApiKey;
     }
 
+    public void setMiracleApiKey(String miracleApiKey) {
+        this.miracleApiKey = miracleApiKey;
+    }
+
     /**
      * @return API 请求超时秒数，默认 20。
      */
     public int getTimeoutSeconds() {
         return timeoutSeconds;
+    }
+
+    public void setTimeoutSeconds(int timeoutSeconds) {
+        this.timeoutSeconds = timeoutSeconds;
     }
 
     public boolean isAutoCopy() {
@@ -89,6 +98,15 @@ public final class PusSyAuthConfig {
         save();
     }
 
+    public boolean isVictoryCopyEnabled() {
+        return victoryCopyEnabled;
+    }
+
+    public void setVictoryCopyEnabled(boolean victoryCopyEnabled) {
+        this.victoryCopyEnabled = victoryCopyEnabled;
+        save();
+    }
+
     /**
      * 加载位于游戏运行目录 {@code config/pussyauth.properties} 的配置文件。
      *
@@ -103,6 +121,7 @@ public final class PusSyAuthConfig {
         cfg.timeoutSeconds = 20;
         cfg.autoCopy = true;
         cfg.showChatMessage = true;
+        cfg.victoryCopyEnabled = true;
 
         Path configPath = Path.of(CONFIG_FILE);
         if (!Files.exists(configPath)) {
@@ -142,6 +161,9 @@ public final class PusSyAuthConfig {
         cfg.showChatMessage = Boolean.parseBoolean(
                 props.getProperty("showChatMessage", "true")
         );
+        cfg.victoryCopyEnabled = Boolean.parseBoolean(
+                props.getProperty("victoryCopyEnabled", "true")
+        );
 
         PusSyAuth.LOGGER.info(
                 "[PusSyAuth] 配置加载完成 " +
@@ -172,6 +194,7 @@ public final class PusSyAuthConfig {
         props.setProperty("timeoutSeconds", String.valueOf(timeoutSeconds));
         props.setProperty("autoCopy", String.valueOf(autoCopy));
         props.setProperty("showChatMessage", String.valueOf(showChatMessage));
+        props.setProperty("victoryCopyEnabled", String.valueOf(victoryCopyEnabled));
 
         try {
             // 确保 config 目录存在
